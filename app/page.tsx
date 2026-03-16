@@ -1,5 +1,11 @@
+import { Button } from '@/components/ui/button';
+
 function HomePage() {
-  return <div className='text-3xl font-bold underline'>HomePage</div>;
+  return (
+    <div>
+      <Button variant='outline'>Click me</Button>
+    </div>
+  );
 }
 
 export default HomePage;
