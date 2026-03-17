@@ -1,10 +1,8 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import localFont from 'next/font/local';
-import { Geist } from "next/font/google";
-import { cn } from "@/lib/utils";
-
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+import Navbar from '@/components/navbar/Navbar';
+import { ThemeProvider } from '@/components/theme-provider';
 
 const pretendard = localFont({
   src: '../public/fonts/pretendard/PretendardVariable.woff2',
@@ -23,8 +21,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang='en' className={cn("font-sans", geist.variable)}>
-      <body className={`${pretendard.className} antialiased`}>{children}</body>
-    </html>
+    <>
+      <html lang='en' suppressHydrationWarning>
+        <body className={`${pretendard.className} antialiased`}>
+          <ThemeProvider
+            attribute='class'
+            defaultTheme='system'
+            enableSystem
+            disableTransitionOnChange
+          >
+            <Navbar />
+            <main className='container py-10'>{children}</main>
+          </ThemeProvider>
+        </body>
+      </html>
+    </>
   );
 }
