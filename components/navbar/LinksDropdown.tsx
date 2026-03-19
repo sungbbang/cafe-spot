@@ -9,6 +9,8 @@ import { LuAlignLeft } from 'react-icons/lu';
 import UserIcon from './UserIcon';
 import { links } from '@/utils/links';
 import Link from 'next/link';
+import { Separator } from '../ui/separator';
+import { signOut } from '@/utils/actions';
 
 function LinksDropdown() {
   return (
@@ -30,6 +32,10 @@ function LinksDropdown() {
             </Link>
           </DropdownMenuItem>
         ))}
+        <Separator />
+        <DropdownMenuItem onClick={signOut} className='w-full'>
+          로그아웃
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
