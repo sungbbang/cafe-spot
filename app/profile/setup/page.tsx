@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
 import UserIcon from '@/components/navbar/UserIcon';
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 
 function ProfileSetupPage() {
   const [preview, setPreview] = useState<string | null>(null);
@@ -39,32 +40,35 @@ function ProfileSetupPage() {
   return (
     <section className='flex justify-center'>
       <div className='w-full max-w-sm rounded-xl border p-8'>
-        <h1 className='mb-6 text-2xl font-semibold'>프로필 생성</h1>
-
-        <form action={createProfileAction} className='space-y-6'>
+        <h1 className='text-2xl font-semibold'>프로필 생성</h1>
+        <form action={createProfileAction} className='mt-6 space-y-6'>
           <div className='flex flex-col items-center gap-3'>
             {preview ? (
-              <img
+              <Image
                 src={preview}
-                className='h-16 w-16 rounded-full object-cover'
+                width={96}
+                height={96}
+                className='h-24 w-24 rounded-md object-cover'
+                alt='profileImage'
               />
             ) : (
-              <UserIcon className='h-16 w-16' />
+              <UserIcon className='h-24 w-24 rounded-md' />
             )}
           </div>
 
-          <div>
+          <>
             <Field className='flex flex-col items-center gap-3'>
-              <FieldLabel htmlFor='picture'>프로필 이미지</FieldLabel>
+              <FieldLabel htmlFor='profileImage'>프로필 이미지</FieldLabel>
               <Input
-                id='picture'
+                id='profileImage'
+                name='profileImage'
                 type='file'
                 accept='image/*'
                 onChange={handleImageChange}
               />
-              <FieldDescription>나중에 설정해도 상관없어요.</FieldDescription>
+              <FieldDescription>나중에 설정할 수 있어요.</FieldDescription>
             </Field>
-          </div>
+          </>
 
           <div className='flex flex-col gap-3'>
             <FieldLabel htmlFor='username'>
@@ -75,14 +79,18 @@ function ProfileSetupPage() {
                 id='username'
                 name='username'
                 type='text'
-                placeholder='닉네임을 입력하세요.'
+                placeholder='닉네임'
                 required
               />
               <Button variant='outline'>중복 확인</Button>
             </Field>
           </div>
 
-          <Button>시작하기</Button>
+          <div className='flex justify-center'>
+            <Button type='submit' size='lg'>
+              생성하기
+            </Button>
+          </div>
         </form>
       </div>
     </section>
