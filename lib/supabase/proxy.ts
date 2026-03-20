@@ -29,31 +29,31 @@ export async function updateSession(request: NextRequest) {
     },
   );
 
-  const { pathname } = request.nextUrl;
+  // const { pathname } = request.nextUrl;
 
-  const isAuthRoute =
-    pathname.startsWith('/auth') || pathname.startsWith('/api/auth');
+  // const isAuthRoute =
+  //   pathname.startsWith('/auth') || pathname.startsWith('/api/auth');
 
-  if (isAuthRoute) {
-    return supabaseResponse;
-  }
+  // if (isAuthRoute) {
+  //   return supabaseResponse;
+  // }
 
-  const isBlocked =
-    pathname === '/cafes/register' ||
-    (pathname.startsWith('/cafes/') && pathname.endsWith('/edit'));
+  // const isBlocked =
+  //   pathname === '/cafes/register' ||
+  //   (pathname.startsWith('/cafes/') && pathname.endsWith('/edit'));
 
-  const isCafeDetail = /^\/cafes\/[^/]+$/.test(pathname);
+  // const isCafeDetail = /^\/cafes\/[^/]+$/.test(pathname);
 
-  const isPublic = pathname === '/' || isCafeDetail;
+  // const isPublic = pathname === '/' || isCafeDetail;
 
-  const { data } = await supabase.auth.getClaims();
-  const user = data?.claims;
+  // const { data } = await supabase.auth.getClaims();
+  // const user = data?.claims;
 
-  if (!user && (isBlocked || !isPublic)) {
-    const url = request.nextUrl.clone();
-    url.pathname = '/';
-    return NextResponse.redirect(url);
-  }
+  // if (!user && (isBlocked || !isPublic)) {
+  //   const url = request.nextUrl.clone();
+  //   url.pathname = '/';
+  //   return NextResponse.redirect(url);
+  // }
 
   return supabaseResponse;
 }

@@ -33,3 +33,8 @@ export const signOut = async () => {
     redirect('/');
   }
 };
+
+export const createProfileAction = async () => {
+  console.log('프로필 생성');
+  redirect('/');
+};
