@@ -2,6 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
+import { Username, validateWithSchema } from './schema';
 
 export const signIn = async (formData: FormData) => {
   const provider = formData.get('provider') as 'google' | 'kakao';
@@ -31,6 +32,12 @@ export const signOut = async () => {
   }
 };
 
-export const createProfileAction = async () => {
-  redirect('/');
+export const createProfileAction = async (formData: FormData) => {
+  try {
+    const rawData = Object.fromEntries(formData);
+    const validateUsername = validateWithSchema(Username, rawData.username);
+    console.log(validateUsername);
+  } catch (error) {
+    console.log(error);
+  }
 };
