@@ -27,14 +27,6 @@ export const signOut = async () => {
   const { error } = await supabase.auth.signOut();
 
   if (error) {
-    console.log(error);
-  } else {
-    console.log('로그아웃 성공');
-    redirect('/');
+    throw new Error(error.message);
   }
-};
-
-export const createProfileAction = async () => {
-  console.log('프로필 생성');
-  redirect('/');
 };

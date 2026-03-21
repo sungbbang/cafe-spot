@@ -3,6 +3,7 @@ import './globals.css';
 import localFont from 'next/font/local';
 import Navbar from '@/components/navbar/Navbar';
 import { ThemeProvider } from '@/components/theme-provider';
+import { Toaster } from 'sonner';
 
 const pretendard = localFont({
   src: '../public/fonts/pretendard/PretendardVariable.woff2',
@@ -32,6 +33,7 @@ export default function RootLayout({
           >
             <Navbar />
             <main className='container py-10'>{children}</main>
+            <Toaster />
           </ThemeProvider>
         </body>
       </html>

@@ -10,7 +10,7 @@ import UserIcon from './UserIcon';
 import { links } from '@/utils/links';
 import Link from 'next/link';
 import { Separator } from '../ui/separator';
-import { signOut } from '@/utils/actions';
+import SignOutMenuItem from './SignOutMenuItem';
 
 function LinksDropdown() {
   return (
@@ -33,9 +33,8 @@ function LinksDropdown() {
           </DropdownMenuItem>
         ))}
         <Separator />
-        <DropdownMenuItem onClick={signOut} className='w-full'>
-          로그아웃
-        </DropdownMenuItem>
+
+        <SignOutMenuItem />
       </DropdownMenuContent>
     </DropdownMenu>
   );
