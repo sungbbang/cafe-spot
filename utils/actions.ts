@@ -30,3 +30,7 @@ export const signOut = async () => {
     throw new Error(error.message);
   }
 };
+
+export const createProfileAction = async () => {
+  redirect('/');
+};
