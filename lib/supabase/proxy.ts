@@ -2,9 +2,7 @@ import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
 export async function updateSession(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({
-    request,
-  });
+  let supabaseResponse = NextResponse.next({ request });
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -18,9 +16,7 @@ export async function updateSession(request: NextRequest) {
           cookiesToSet.forEach(({ name, value }) =>
             request.cookies.set(name, value),
           );
-          supabaseResponse = NextResponse.next({
-            request,
-          });
+          supabaseResponse = NextResponse.next({ request });
           cookiesToSet.forEach(({ name, value, options }) =>
             supabaseResponse.cookies.set(name, value, options),
           );
@@ -29,31 +25,28 @@ export async function updateSession(request: NextRequest) {
     },
   );
 
-  // const { pathname } = request.nextUrl;
+  const { pathname } = request.nextUrl;
 
-  // const isAuthRoute =
-  //   pathname.startsWith('/auth') || pathname.startsWith('/api/auth');
+  // auth 경로는 무조건 통과 (OAuth 콜백 등)
+  if (pathname.startsWith('/auth')) {
+    return supabaseResponse;
+  }
 
-  // if (isAuthRoute) {
-  //   return supabaseResponse;
-  // }
+  // 비로그인 유저도 접근 가능한 경로
+  const isCafeDetail =
+    /^\/cafes\/[^/]+$/.test(pathname) && pathname !== '/cafes/register';
+  const isPublic = pathname === '/' || isCafeDetail;
 
-  // const isBlocked =
-  //   pathname === '/cafes/register' ||
-  //   (pathname.startsWith('/cafes/') && pathname.endsWith('/edit'));
+  if (!isPublic) {
+    const { data } = await supabase.auth.getClaims();
+    const user = data?.claims;
 
-  // const isCafeDetail = /^\/cafes\/[^/]+$/.test(pathname);
-
-  // const isPublic = pathname === '/' || isCafeDetail;
-
-  // const { data } = await supabase.auth.getClaims();
-  // const user = data?.claims;
-
-  // if (!user && (isBlocked || !isPublic)) {
-  //   const url = request.nextUrl.clone();
-  //   url.pathname = '/';
-  //   return NextResponse.redirect(url);
-  // }
+    if (!user) {
+      const url = request.nextUrl.clone();
+      url.pathname = '/';
+      return NextResponse.redirect(url);
+    }
+  }
 
   return supabaseResponse;
 }
