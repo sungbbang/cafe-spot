@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation';
 import { Username, validateWithSchema } from './schema';
 import db from './db';
 import { getAuthUser, getAuthUserWithProfile } from './auth';
+import { actionFunction } from './types';
 
 export const signIn = async (formData: FormData) => {
   const provider = formData.get('provider') as 'google' | 'kakao';
@@ -54,7 +55,15 @@ export const createNickname = async (nickname: string) => {
   }
 };
 
-export const createProfileAction = async (formData: FormData) => {
+const renderError = (error: unknown) => ({
+  success: false,
+  message: error instanceof Error ? error.message : '오류가 발생했습니다.',
+});
+
+export const createProfileAction: actionFunction = async (
+  prevState: any,
+  formData: FormData,
+) => {
   try {
     const user = await getAuthUser();
     if (!user) throw new Error('로그인이 필요합니다.');
@@ -74,7 +83,7 @@ export const createProfileAction = async (formData: FormData) => {
       },
     });
   } catch (error) {
-    console.log(error);
+    return renderError(error);
   }
   redirect('/');
 };

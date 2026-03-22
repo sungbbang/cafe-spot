@@ -10,7 +10,17 @@ function useToast(options: ToastOptions = {}) {
   const success = (message: string) => toast.success(message, { position });
   const error = (message: string) => toast.error(message, { position });
 
-  return { success, error };
+  const formAction = (state: { success: boolean | null; message: string }) => {
+    if (!state.message) return;
+
+    if (state.success) {
+      success(state.message);
+    } else {
+      error(state.message);
+    }
+  };
+
+  return { success, error, formAction };
 }
 
 export default useToast;
