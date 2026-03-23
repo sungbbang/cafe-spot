@@ -1,9 +1,12 @@
-import { fetchProfileImage } from '@/utils/actions';
 import { LuUserRound } from 'react-icons/lu';
 
-async function UserIcon({ className }: { className?: string }) {
-  const profileImage = await fetchProfileImage();
-
+function UserIcon({
+  profileImage,
+  className,
+}: {
+  profileImage?: string | null;
+  className?: string;
+}) {
   if (profileImage) {
     return (
       <img

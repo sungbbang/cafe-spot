@@ -11,8 +11,11 @@ import { links } from '@/utils/links';
 import Link from 'next/link';
 import { Separator } from '../ui/separator';
 import SignOutMenuItem from './SignOutMenuItem';
+import { fetchProfileImage } from '@/utils/actions';
 
-function LinksDropdown() {
+async function LinksDropdown() {
+  const profileImage = await fetchProfileImage();
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -21,7 +24,7 @@ function LinksDropdown() {
           className='flex h-9 w-24 justify-between gap-4 px-4'
         >
           <LuAlignLeft />
-          <UserIcon />
+          <UserIcon profileImage={profileImage} />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
