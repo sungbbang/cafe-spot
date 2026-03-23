@@ -2,10 +2,11 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
-import { Username, validateWithSchema } from './schema';
+import { ProfileImage, Username, validateWithSchema } from './schema';
 import db from './db';
 import { getAuthUser, getAuthUserWithProfile } from './auth';
 import { actionFunction } from './types';
+import { uploadImage } from './supabase';
 
 export const signIn = async (formData: FormData) => {
   const provider = formData.get('provider') as 'google' | 'kakao';
@@ -71,15 +72,23 @@ export const createProfileAction: actionFunction = async (
     const existingProfile = await getAuthUserWithProfile();
     if (existingProfile) throw new Error('이미 프로필이 존재합니다.');
 
-    const rawData = Object.fromEntries(formData);
-    const validatedUsername = validateWithSchema(Username, rawData.username);
+    const username = formData.get('username') as string;
+    const imageFile = formData.get('profileImage') as File;
+
+    const validatedUsername = validateWithSchema(Username, username);
+
+    let imagePath = '';
+    if (imageFile && imageFile.size > 0) {
+      validateWithSchema(ProfileImage, imageFile);
+      imagePath = await uploadImage(imageFile);
+    }
 
     await db.profile.create({
       data: {
         supabaseId: user.id,
         username: validatedUsername,
         email: user.email ?? null,
-        profileImage: '',
+        profileImage: imagePath,
       },
     });
   } catch (error) {

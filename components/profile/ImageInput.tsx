@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import UserIcon from '../navbar/UserIcon';
 import { Field, FieldDescription, FieldLabel } from '../ui/field';
 import { Input } from '../ui/input';
-import { imageSchema, validateWithSchema } from '@/utils/schema';
+import { ProfileImage, validateWithSchema } from '@/utils/schema';
 
 function ImageInput({ name }: { name: string }) {
   const [preview, setPreview] = useState<string | null>(null);
@@ -23,7 +23,7 @@ function ImageInput({ name }: { name: string }) {
     }
 
     try {
-      validateWithSchema(imageSchema, file);
+      validateWithSchema(ProfileImage, file);
     } catch (error) {
       e.target.value = '';
       setError(error instanceof Error ? error.message : '오류가 발생했습니다.');

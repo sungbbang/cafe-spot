@@ -19,7 +19,7 @@ export const validateWithSchema = <T extends z.ZodTypeAny>(
   return result.data;
 };
 
-export const imageSchema = z
+export const ProfileImage = z
   .instanceof(File)
   .refine(file => file.size <= 1024 * 1024, '최대 크기는 1mb입니다.')
   .refine(
