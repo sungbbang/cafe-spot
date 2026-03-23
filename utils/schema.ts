@@ -18,3 +18,11 @@ export const validateWithSchema = <T extends z.ZodTypeAny>(
 
   return result.data;
 };
+
+export const imageSchema = z
+  .instanceof(File)
+  .refine(file => file.size <= 1024 * 1024, '최대 크기는 1mb입니다.')
+  .refine(
+    file => file.type.startsWith('image/'),
+    'JPG, JPEG, PNG, WEBP 형식만 지원합니다.',
+  );

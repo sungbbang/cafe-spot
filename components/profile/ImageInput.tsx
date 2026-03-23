@@ -5,26 +5,34 @@ import { useEffect, useState } from 'react';
 import UserIcon from '../navbar/UserIcon';
 import { Field, FieldDescription, FieldLabel } from '../ui/field';
 import { Input } from '../ui/input';
+import { imageSchema, validateWithSchema } from '@/utils/schema';
 
 function ImageInput({ name }: { name: string }) {
   const [preview, setPreview] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
 
-    // 이전 객체 URL을 해제해 메모리 정리
-    if (preview) {
-      URL.revokeObjectURL(preview);
+    if (preview) URL.revokeObjectURL(preview);
+
+    if (!file) {
+      setPreview(null);
+      setError(null);
+      return;
     }
 
-    // 파일 선택 취소 시 미리보기도 기본값으로 수정
-    if (!file) {
+    try {
+      validateWithSchema(imageSchema, file);
+    } catch (error) {
+      e.target.value = '';
+      setError(error instanceof Error ? error.message : '오류가 발생했습니다.');
       setPreview(null);
       return;
     }
 
-    const imageUrl = URL.createObjectURL(file);
-    setPreview(imageUrl);
+    setPreview(URL.createObjectURL(file));
+    setError(null);
   };
 
   useEffect(() => {
@@ -53,6 +61,7 @@ function ImageInput({ name }: { name: string }) {
 
       <>
         <Field className='flex flex-col items-center gap-3'>
+          <FieldDescription>나중에 설정할 수 있어요.</FieldDescription>
           <FieldLabel htmlFor={name}>프로필 이미지</FieldLabel>
           <Input
             id={name}
@@ -61,7 +70,11 @@ function ImageInput({ name }: { name: string }) {
             accept='image/*'
             onChange={handleImageChange}
           />
-          <FieldDescription>나중에 설정할 수 있어요.</FieldDescription>
+          {error && (
+            <FieldDescription className='text-destructive'>
+              {error}
+            </FieldDescription>
+          )}
         </Field>
       </>
     </>
