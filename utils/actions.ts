@@ -96,3 +96,8 @@ export const createProfileAction: actionFunction = async (
   }
   redirect('/');
 };
+
+export const fetchProfileImage = async () => {
+  const profile = await getAuthUserWithProfile();
+  return profile?.profileImage ?? null;
+};
