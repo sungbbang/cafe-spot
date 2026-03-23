@@ -35,7 +35,7 @@ export const signOut = async () => {
   }
 };
 
-export const createNickname = async (nickname: string) => {
+export const checkNickname = async (nickname: string) => {
   try {
     const existingNickname = await db.profile.findUnique({
       where: { username: nickname },

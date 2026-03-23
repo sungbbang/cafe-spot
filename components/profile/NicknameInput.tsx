@@ -1,6 +1,6 @@
 'use client';
 
-import { createNickname } from '@/utils/actions';
+import { checkNickname } from '@/utils/actions';
 import { Button } from '../ui/button';
 import { Field, FieldDescription, FieldLabel } from '../ui/field';
 import { Input } from '../ui/input';
@@ -18,7 +18,7 @@ function NicknameInput({
   const [isAvailable, setIsAvailable] = useState(false);
 
   const handleCheckNickname = async () => {
-    const result = await createNickname(username);
+    const result = await checkNickname(username);
     if (!result) return;
 
     setMessage(result.message);
