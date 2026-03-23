@@ -1,3 +1,5 @@
+'use client';
+
 import useToast from '@/hooks/useToast';
 import { actionFunction } from '@/utils/types';
 import { useActionState, useEffect } from 'react';
