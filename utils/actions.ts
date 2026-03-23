@@ -6,7 +6,7 @@ import { ProfileImage, Username, validateWithSchema } from './schema';
 import db from './db';
 import { getAuthUser, getAuthUserWithProfile } from './auth';
 import { actionFunction } from './types';
-import { uploadImage } from './supabase';
+import { adminAuthClient, uploadImage } from './supabase';
 
 export const signIn = async (formData: FormData) => {
   const provider = formData.get('provider') as 'google' | 'kakao';
@@ -100,4 +100,24 @@ export const createProfileAction: actionFunction = async (
 export const fetchProfileImage = async () => {
   const profile = await getAuthUserWithProfile();
   return profile?.profileImage ?? null;
+};
+
+export const deleteAccountAction = async () => {
+  try {
+    const user = await getAuthUser();
+    if (!user) throw new Error('로그인이 필요합니다.');
+
+    // DB 프로필 삭제
+    await db.profile.delete({
+      where: { supabaseId: user.id },
+    });
+
+    // Supabase Auth 유저 삭제
+    const { error } = await adminAuthClient.deleteUser(user.id);
+    if (error) throw new Error(error.message);
+  } catch (error) {
+    return renderError(error);
+  }
+
+  redirect('/');
 };
