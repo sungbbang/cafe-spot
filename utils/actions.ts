@@ -7,6 +7,7 @@ import db from './db';
 import { getAuthUser, getAuthUserWithProfile } from './auth';
 import { actionFunction } from './types';
 import { adminAuthClient, uploadImage } from './supabase';
+import { revalidatePath } from 'next/cache';
 
 export const signIn = async (formData: FormData) => {
   const provider = formData.get('provider') as 'google' | 'kakao';
@@ -88,12 +89,14 @@ export const createProfileAction: actionFunction = async (
         supabaseId: user.id,
         username: validatedUsername,
         email: user.email ?? null,
+        provider: user.app_metadata.provider as string,
         profileImage: imagePath,
       },
     });
   } catch (error) {
     return renderError(error);
   }
+  revalidatePath('/', 'layout');
   redirect('/');
 };
 
