@@ -6,7 +6,7 @@ import { ProfileImage, Username, validateWithSchema } from './schema';
 import db from './db';
 import { getAuthUser, getAuthUserWithProfile } from './auth';
 import { actionFunction } from './types';
-import { adminAuthClient, uploadImage } from './supabase';
+import { adminAuthClient, deleteImage, uploadImage } from './supabase';
 import { revalidatePath } from 'next/cache';
 
 export const signIn = async (formData: FormData) => {
@@ -127,4 +127,73 @@ export const createProfileAction: actionFunction = async (
 export const fetchProfileImage = async () => {
   const profile = await getAuthUserWithProfile();
   return profile?.profileImage ?? null;
+};
+
+export const updateProfileAction: actionFunction = async (
+  prevState: any,
+  formData: FormData,
+) => {
+  try {
+    const profile = await getAuthUserWithProfile();
+    if (!profile) throw new Error('프로필 정보가 없습니다.');
+
+    const username = formData.get('username') as string;
+    const imageFile = formData.get('profileImage') as File;
+    const removeImage = formData.get('removeImage') === 'true';
+
+    // 닉네임이 기존에 사용하던 닉네임과 같은지 비교
+    const isChangedUsername = username !== profile.username;
+    let validatedUsername: string | undefined;
+
+    // 기존 닉네임과 다를 때만 검증
+    if (isChangedUsername) {
+      validatedUsername = validateWithSchema(Username, username);
+      const existingUsername = await db.profile.findUnique({
+        where: { username: validatedUsername },
+      });
+
+      // 본인 닉네임이 아닌 경우에만 중복 처리
+      if (
+        existingUsername &&
+        existingUsername.supabaseId !== profile.supabaseId
+      ) {
+        throw new Error('이미 사용 중인 닉네임입니다.');
+      }
+    }
+
+    // 이미지 처리
+    let imagePath: string | undefined;
+    if (removeImage) {
+      // 기본 이미지로 변경
+      if (profile.profileImage) {
+        await deleteImage(profile.profileImage);
+      }
+      imagePath = '';
+    } else if (imageFile && imageFile.size > 0) {
+      // 새 이미지로 변경
+      validateWithSchema(ProfileImage, imageFile);
+      if (profile.profileImage) {
+        await deleteImage(profile.profileImage);
+      }
+      imagePath = await uploadImage(imageFile);
+    }
+
+    // 기존 데이터와 다를 때만 업데이트
+    await db.profile.update({
+      where: { supabaseId: profile.supabaseId },
+      data: {
+        ...(validatedUsername !== undefined && {
+          username: validatedUsername,
+        }),
+        ...(imagePath !== undefined && {
+          profileImage: imagePath,
+        }),
+      },
+    });
+
+    revalidatePath('/profile');
+    return { success: true, message: '프로필이 업데이트되었습니다.' };
+  } catch (error) {
+    return renderError(error);
+  }
 };
