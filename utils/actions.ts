@@ -37,6 +37,26 @@ export const signOut = async () => {
   }
 };
 
+export const deleteAccountAction = async () => {
+  try {
+    const user = await getAuthUser();
+    if (!user) throw new Error('로그인이 필요합니다.');
+
+    // DB 프로필 삭제
+    await db.profile.delete({
+      where: { supabaseId: user.id },
+    });
+
+    // Supabase Auth 유저 삭제
+    const { error } = await adminAuthClient.deleteUser(user.id);
+    if (error) throw new Error(error.message);
+  } catch (error) {
+    return renderError(error);
+  }
+
+  redirect('/');
+};
+
 export const checkNickname = async (nickname: string) => {
   try {
     const existingNickname = await db.profile.findUnique({
@@ -77,6 +97,10 @@ export const createProfileAction: actionFunction = async (
     const imageFile = formData.get('profileImage') as File;
 
     const validatedUsername = validateWithSchema(Username, username);
+    const existingUsername = await db.profile.findUnique({
+      where: { username: validatedUsername },
+    });
+    if (existingUsername) throw new Error('이미 사용 중인 닉네임입니다.');
 
     let imagePath = '';
     if (imageFile && imageFile.size > 0) {
@@ -103,24 +127,4 @@ export const createProfileAction: actionFunction = async (
 export const fetchProfileImage = async () => {
   const profile = await getAuthUserWithProfile();
   return profile?.profileImage ?? null;
-};
-
-export const deleteAccountAction = async () => {
-  try {
-    const user = await getAuthUser();
-    if (!user) throw new Error('로그인이 필요합니다.');
-
-    // DB 프로필 삭제
-    await db.profile.delete({
-      where: { supabaseId: user.id },
-    });
-
-    // Supabase Auth 유저 삭제
-    const { error } = await adminAuthClient.deleteUser(user.id);
-    if (error) throw new Error(error.message);
-  } catch (error) {
-    return renderError(error);
-  }
-
-  redirect('/');
 };
