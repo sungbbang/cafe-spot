@@ -10,13 +10,19 @@ import {
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { LuShieldAlert } from 'react-icons/lu';
+import ProfileUpdateForm from '@/components/profile/ProfileUpdateForm';
 
 async function ProfilePage() {
   const profile = await getAuthUserWithProfile();
-  if (!profile) redirect('/');
+  if (!profile) redirect('/profile/setup');
 
   const provider = profile.provider as 'google' | 'kakao';
   const joinedAt = new Date(profile.createdAt).toLocaleDateString('ko-KR', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+  const updatedAt = new Date(profile.updatedAt).toLocaleDateString('ko-KR', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
@@ -50,6 +56,11 @@ async function ProfilePage() {
               <span className='text-muted-foreground'>가입일</span>
               <span className='font-medium'>{joinedAt}</span>
             </div>
+            <Separator />
+            <div className='flex justify-between'>
+              <span className='text-muted-foreground'>최근 수정일</span>
+              <span className='font-medium'>{updatedAt}</span>
+            </div>
           </CardContent>
         </Card>
 
@@ -61,7 +72,12 @@ async function ProfilePage() {
               프로필 이미지와 닉네임을 수정하세요.
             </CardDescription>
           </CardHeader>
-          <CardContent>{/* 프로필 수정 폼 */}</CardContent>
+          <CardContent>
+            <ProfileUpdateForm
+              username={profile.username}
+              profileImage={profile.profileImage}
+            />
+          </CardContent>
         </Card>
 
         {/* 회원탈퇴 */}
