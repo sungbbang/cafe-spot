@@ -14,7 +14,6 @@ function ProfileUpdateForm({
   username: string;
   profileImage: string | null;
 }) {
-  const [isAvailable, setIsAvailable] = useState(true);
   const [removeImage, setRemoveImage] = useState(false);
 
   return (
@@ -27,11 +26,7 @@ function ProfileUpdateForm({
         onRemove={() => setRemoveImage(true)}
         onFileChange={() => setRemoveImage(false)}
       />
-      <NicknameInput
-        name='username'
-        defaultValue={username}
-        onAvailableChange={setIsAvailable}
-      />
+      <NicknameInput name='username' defaultValue={username} />
       <div className='flex justify-center'>
         <SubmitButton text='수정하기' />
       </div>
