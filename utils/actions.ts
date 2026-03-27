@@ -102,7 +102,7 @@ export const createProfileAction: actionFunction = async (
     });
     if (existingUsername) throw new Error('이미 사용 중인 닉네임입니다.');
 
-    let imagePath = '';
+    let imagePath: string | null = null;
     if (imageFile && imageFile.size > 0) {
       validateWithSchema(ProfileImage, imageFile);
       imagePath = await uploadImage(imageFile);
