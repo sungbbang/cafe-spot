@@ -12,7 +12,7 @@ function ProfileSetupForm() {
 
   return (
     <FormContainer action={createProfileAction} className='mt-6 space-y-6'>
-      <ImageInput name='profileImage' />
+      <ImageInput name='profileImage' showDescription />
       <NicknameInput name='username' onAvailableChange={setIsAvailable} />
       <div className='flex justify-center'>
         <SubmitButton text='생성하기' disabled={!isAvailable} />
