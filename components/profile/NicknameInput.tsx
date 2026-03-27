@@ -6,24 +6,28 @@ import { Field, FieldDescription, FieldLabel } from '../ui/field';
 import { Input } from '../ui/input';
 import { useState } from 'react';
 
+type NicknameInputProps = {
+  name: string;
+  defaultValue?: string | null;
+  onAvailableChange?: (available: boolean) => void;
+};
+
 function NicknameInput({
   name,
+  defaultValue,
   onAvailableChange,
-}: {
-  name: string;
-  onAvailableChange: (available: boolean) => void;
-}) {
-  const [username, setUsername] = useState('');
+}: NicknameInputProps) {
+  const [username, setUsername] = useState(defaultValue || '');
   const [message, setMessage] = useState('');
-  const [isAvailable, setIsAvailable] = useState(false);
+  const [isValidNickname, setIsValidNickname] = useState(false);
 
   const handleCheckNickname = async () => {
     const result = await checkNickname(username);
     if (!result) return;
 
     setMessage(result.message);
-    setIsAvailable(result.available);
-    onAvailableChange(result.available);
+    setIsValidNickname(result.available);
+    onAvailableChange?.(result.available);
   };
 
   return (
@@ -43,15 +47,15 @@ function NicknameInput({
           onChange={e => {
             setUsername(e.target.value);
             setMessage('');
-            setIsAvailable(false);
-            onAvailableChange(false);
+            setIsValidNickname(false);
+            onAvailableChange?.(false);
           }}
         />
         <Button
           type='button'
           variant='outline'
           onClick={handleCheckNickname}
-          disabled={!username}
+          disabled={username === '' || username === defaultValue}
         >
           중복 확인
         </Button>
@@ -59,7 +63,7 @@ function NicknameInput({
 
       {message && (
         <FieldDescription
-          className={`${isAvailable ? 'text-green-600' : 'text-destructive'}`}
+          className={`${isValidNickname ? 'text-green-600' : 'text-destructive'}`}
         >
           {message}
         </FieldDescription>
