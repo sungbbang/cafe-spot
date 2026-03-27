@@ -10,12 +10,14 @@ type NicknameInputProps = {
   name: string;
   defaultValue?: string | null;
   onAvailableChange?: (available: boolean) => void;
+  showCheckButton?: boolean;
 };
 
 function NicknameInput({
   name,
   defaultValue,
   onAvailableChange,
+  showCheckButton = false,
 }: NicknameInputProps) {
   const [username, setUsername] = useState(defaultValue || '');
   const [message, setMessage] = useState('');
@@ -51,14 +53,16 @@ function NicknameInput({
             onAvailableChange?.(false);
           }}
         />
-        <Button
-          type='button'
-          variant='outline'
-          onClick={handleCheckNickname}
-          disabled={username === '' || username === defaultValue}
-        >
-          중복 확인
-        </Button>
+        {showCheckButton && (
+          <Button
+            type='button'
+            variant='outline'
+            onClick={handleCheckNickname}
+            disabled={username === ''}
+          >
+            중복 확인
+          </Button>
+        )}
       </Field>
 
       {message && (
