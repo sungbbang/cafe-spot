@@ -141,10 +141,17 @@ export const updateProfileAction: actionFunction = async (
     const imageFile = formData.get('profileImage') as File;
     const removeImage = formData.get('removeImage') === 'true';
 
-    // 닉네임이 기존에 사용하던 닉네임과 같은지 비교
     const isChangedUsername = username !== profile.username;
-    let validatedUsername: string | undefined;
+    const isChangedImage =
+      (removeImage && !!profile.profileImage) ||
+      (!!imageFile && imageFile.size > 0);
 
+    // 아무것도 변경 안 됐을 때
+    if (!isChangedUsername && !isChangedImage) {
+      return { success: true, message: '변경된 내용이 없습니다.' };
+    }
+
+    let validatedUsername: string | undefined;
     // 기존 닉네임과 다를 때만 검증
     if (isChangedUsername) {
       validatedUsername = validateWithSchema(Username, username);
@@ -162,20 +169,23 @@ export const updateProfileAction: actionFunction = async (
     }
 
     // 이미지 처리
-    let imagePath: string | undefined;
-    if (removeImage) {
-      // 기본 이미지로 변경
-      if (profile.profileImage) {
-        await deleteImage(profile.profileImage);
+    let imagePath: string | null | undefined;
+    // 기존 프로필 이미지와 다를 때만 검증
+    if (isChangedImage) {
+      if (removeImage) {
+        // 기본 이미지로 변경
+        if (profile.profileImage) {
+          await deleteImage(profile.profileImage);
+        }
+        imagePath = null;
+      } else if (imageFile && imageFile.size > 0) {
+        // 새 이미지로 변경
+        validateWithSchema(ProfileImage, imageFile);
+        if (profile.profileImage) {
+          await deleteImage(profile.profileImage);
+        }
+        imagePath = await uploadImage(imageFile);
       }
-      imagePath = '';
-    } else if (imageFile && imageFile.size > 0) {
-      // 새 이미지로 변경
-      validateWithSchema(ProfileImage, imageFile);
-      if (profile.profileImage) {
-        await deleteImage(profile.profileImage);
-      }
-      imagePath = await uploadImage(imageFile);
     }
 
     // 기존 데이터와 다를 때만 업데이트
