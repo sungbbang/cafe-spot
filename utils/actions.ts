@@ -207,3 +207,21 @@ export const updateProfileAction: actionFunction = async (
     return renderError(error);
   }
 };
+
+export const createCafeAction: actionFunction = async (
+  prevState: any,
+  formData: FormData,
+) => {
+  try {
+    const profile = await getAuthUserWithProfile();
+    if (!profile) throw new Error('프로필 정보가 없습니다.');
+
+    const rawData = Object.fromEntries(formData);
+
+    console.log(rawData);
+
+    return { success: true, message: '카페가 등록되었습니다.' };
+  } catch (error) {
+    return renderError(error);
+  }
+};

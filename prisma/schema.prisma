@@ -17,4 +17,19 @@ model Profile {
   profileImage String?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+  cafes        Cafe[]
+}
+
+model Cafe {
+  id          String   @id @default(uuid())
+  name        String
+  address     String
+  description String
+  category    String
+  image       String
+  amenities   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  profile     Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  profileId   String
 }
